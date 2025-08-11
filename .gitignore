@@ -47,3 +47,6 @@ pids/
 # Temporary folders
 tmp/
 temp/
+
+# Cursor rules
+.cursorrules

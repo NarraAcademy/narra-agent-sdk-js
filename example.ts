@@ -61,7 +61,7 @@ async function main() {
           completed_tasks: agentStatus.completed_tasks,
           failed_tasks: agentStatus.failed_tasks
         });
-      } catch (error) {
+      } catch (error: any) {
         console.log('获取 Agent 状态失败:', error.message);
       }
     }
@@ -86,10 +86,21 @@ async function main() {
     const runningAgents = await sdkDev.agents.getRunningAgents();
     console.log(`运行中的 Agent 数量: ${runningAgents.length}`);
     
-    // 获取可用的 Agent 类型
-    console.log('\n获取可用的 Agent 类型:');
+    // 获取可用的 Agent 类型（从API获取）
+    console.log('\n获取所有可用的 Agent 类型:');
+    const allAgentTypes = await sdkDev.agents.listAgentTypes();
+    console.log('API返回的类型数据:', allAgentTypes);
+    console.log('数据类型:', typeof allAgentTypes);
+    if (Array.isArray(allAgentTypes)) {
+      console.log(`API支持的类型: ${allAgentTypes.join(', ')}`);
+    } else {
+      console.log('API返回的不是数组，格式可能需要调整');
+    }
+    
+    // 获取当前使用的 Agent 类型（从现有Agent中提取）
+    console.log('\n获取当前使用的 Agent 类型:');
     const availableTypes = await sdkDev.agents.getAvailableAgentTypes();
-    console.log(`可用类型: ${availableTypes.join(', ')}`);
+    console.log(`当前使用的类型: ${availableTypes.join(', ')}`);
     
     // 测试 Agent 存在性检查
     if (agentsResponse.agents.length > 0) {
@@ -159,7 +170,7 @@ async function main() {
         });
         console.log(`原始数据总消息数: ${rawHistory.messages.length}`);
 
-      } catch (error) {
+      } catch (error: any) {
         console.log('聊天功能测试失败:', error.message);
         console.log('这可能是因为 Agent 当前不可用或聊天功能需要特殊权限');
       }

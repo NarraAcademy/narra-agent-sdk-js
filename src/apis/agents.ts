@@ -25,6 +25,24 @@ export class AgentsAPI {
   constructor(private client: HttpClient) {}
 
   /**
+   * 获取可用的 Agent 类型列表
+   * @returns 可用的 Agent 类型数组
+   */
+  async listAgentTypes(): Promise<AgentType[]> {
+    try {
+      const url = `${this.basePath}/types`;
+      const response = await this.client.get<AgentType[]>(url);
+      return response;
+    } catch (error: any) {
+      throw new NarraSDKError(
+        `Failed to list agent types: ${error.message}`,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+  }
+
+  /**
    * 获取 Agent 列表
    */
   async listAgents(params: ListAgentsParams = {}): Promise<AgentsListResponse> {

@@ -73,9 +73,13 @@ async function main() {
   const agentsResponse = await sdk.agents.listAgents();
   console.log(`找到 ${agentsResponse.total_instances} 个 Agents`);
   
-  // 获取可用的 Agent 类型
-  const availableTypes = await sdk.agents.getAvailableAgentTypes();
-  console.log('可用类型:', availableTypes);
+  // 获取所有可用的 Agent 类型（从API获取）
+const allAgentTypes = await sdk.agents.listAgentTypes();
+console.log('API支持的类型:', allAgentTypes);
+
+// 获取当前使用的 Agent 类型（从现有Agent中提取）
+const availableTypes = await sdk.agents.getAvailableAgentTypes();
+console.log('当前使用的类型:', availableTypes);
   
   // 使用便利方法按类型获取
   const professionalAgents = await sdk.agents.getAgentsByType('zai_professional');
@@ -131,11 +135,15 @@ main().catch(console.error);
 - **`getAgentStatus(id)`** - 获取 Agent 状态详情
 - **`getAgent(id)`** - 获取 Agent 状态（`getAgentStatus` 的别名）
 
+#### Agent 类型相关
+
+- **`listAgentTypes()`** - 获取所有可用的 Agent 类型列表（从API获取）
+- **`getAvailableAgentTypes()`** - 获取当前使用的 Agent 类型列表（从现有Agent中提取）
+
 #### 便利方法
 
 - **`getAgentsByType(agentType)`** - 根据类型获取 Agent 列表
 - **`getRunningAgents()`** - 获取所有运行中的 Agent
-- **`getAvailableAgentTypes()`** - 获取可用的 Agent 类型列表
 
 #### 聊天功能
 
