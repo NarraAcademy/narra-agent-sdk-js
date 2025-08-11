@@ -8,6 +8,11 @@ import {
   AgentType,
   ListAgentsParams,
   AgentsListResponse,
+  ChatMessageRequest,
+  ChatMessageResponse,
+  ChatHistoryParams,
+  ChatHistoryResponse,
+  ChatHistoryApiResponse,
   NarraSDKError,
 } from '../types';
 
@@ -141,6 +146,181 @@ export class AgentsAPI {
   async getAvailableAgentTypes(): Promise<AgentType[]> {
     const response = await this.listAgents();
     return response.available_types;
+  }
+
+  // ========================================
+  // 聊天相关功能
+  // ========================================
+
+  /**
+   * 与 Agent 聊天
+   * @param agentId Agent ID
+   * @param request 聊天请求参数
+   * @returns 聊天响应
+   */
+  async chat(agentId: string, request: ChatMessageRequest): Promise<ChatMessageResponse> {
+    if (!agentId) {
+      throw new NarraSDKError('Agent ID is required');
+    }
+    if (!request.message) {
+      throw new NarraSDKError('Message is required');
+    }
+    if (!request.session_id) {
+      throw new NarraSDKError('Session ID is required');
+    }
+
+    try {
+      const response = await this.client.post<ChatMessageResponse>(
+        `${this.basePath}/${agentId}/chat`, 
+        request
+      );
+      return response;
+    } catch (error: any) {
+      throw new NarraSDKError(
+        `Failed to chat with agent ${agentId}: ${error.message}`,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+  }
+
+  /**
+   * 获取 Agent 聊天历史（带 SDK 层面分页）
+   * @param agentId Agent ID
+   * @param params 查询参数
+   * @returns 分页后的聊天历史
+   */
+  async getChatHistory(
+    agentId: string, 
+    params: ChatHistoryParams = {}
+  ): Promise<ChatHistoryResponse> {
+    if (!agentId) {
+      throw new NarraSDKError('Agent ID is required');
+    }
+
+    try {
+      // 获取原始数据
+      const apiResponse = await this.getChatHistoryRaw(agentId, {
+        session_id: params.session_id,
+        limit: params.limit
+      });
+
+      // SDK 层面分页参数
+      const page = params.page || 1;
+      const pageSize = params.pageSize || 20;
+      const total = apiResponse.messages.length;
+      const totalPages = Math.ceil(total / pageSize);
+
+      // 计算分页索引
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, total);
+
+      // 分页切片
+      const paginatedMessages = apiResponse.messages.slice(startIndex, endIndex);
+
+      // 构建分页响应
+      return {
+        session_id: apiResponse.session_id,
+        agent_id: apiResponse.agent_id,
+        messages: paginatedMessages,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages,
+          hasPrev: page > 1,
+          hasNext: page < totalPages
+        },
+        memory_type: apiResponse.memory_type,
+        success: apiResponse.success
+      };
+    } catch (error: any) {
+      throw new NarraSDKError(
+        `Failed to get chat history for agent ${agentId}: ${error.message}`,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+  }
+
+  /**
+   * 获取 Agent 聊天历史（原始 API 响应，无分页处理）
+   * @param agentId Agent ID
+   * @param params 查询参数
+   * @returns 原始聊天历史数据
+   */
+  async getChatHistoryRaw(
+    agentId: string, 
+    params: Omit<ChatHistoryParams, 'page' | 'pageSize'> = {}
+  ): Promise<ChatHistoryApiResponse> {
+    if (!agentId) {
+      throw new NarraSDKError('Agent ID is required');
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      
+      // 设置默认值
+      const sessionId = params.session_id || 'dashboard_session';
+      const limit = params.limit || 50;
+      
+      queryParams.append('session_id', sessionId);
+      queryParams.append('limit', limit.toString());
+
+      const url = `${this.basePath}/${agentId}/chat/history?${queryParams.toString()}`;
+      const response = await this.client.get<ChatHistoryApiResponse>(url);
+      
+      return response;
+    } catch (error: any) {
+      throw new NarraSDKError(
+        `Failed to get raw chat history for agent ${agentId}: ${error.message}`,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+  }
+
+  /**
+   * 便利方法：发送简单消息到 Agent
+   * @param agentId Agent ID
+   * @param message 消息内容
+   * @param sessionId 会话ID，默认为 'dashboard_session'
+   * @param context 可选的上下文信息
+   * @returns Agent 的完整响应
+   */
+  async sendMessage(
+    agentId: string, 
+    message: string, 
+    sessionId: string = 'dashboard_session',
+    context?: Record<string, any>
+  ): Promise<ChatMessageResponse> {
+    return this.chat(agentId, {
+      message,
+      session_id: sessionId,
+      context
+    });
+  }
+
+  /**
+   * 便利方法：发送消息并只返回回复内容
+   * @param agentId Agent ID
+   * @param message 消息内容
+   * @param sessionId 会话ID，默认为 'dashboard_session'
+   * @param context 可选的上下文信息
+   * @returns Agent 的回复内容（纯文本）
+   */
+  async sendMessageText(
+    agentId: string, 
+    message: string, 
+    sessionId: string = 'dashboard_session',
+    context?: Record<string, any>
+  ): Promise<string> {
+    const response = await this.chat(agentId, {
+      message,
+      session_id: sessionId,
+      context
+    });
+    return response.response;
   }
 
   /**

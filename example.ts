@@ -99,6 +99,96 @@ async function main() {
       console.log(`Agent 存在: ${exists}`);
     }
 
+    // 测试聊天功能
+    if (runningAgents.length > 0) {
+      const chatAgent = runningAgents[0];
+      console.log(`\n开始与 Agent 聊天: ${chatAgent.display_name} (${chatAgent.id})`);
+      
+      try {
+        // 发送消息（获取完整响应）
+        console.log('发送消息: "Hello, how are you?"');
+        const response = await sdkDev.agents.sendMessage(
+          chatAgent.id,
+          'Hello, how are you?',
+          'test-session-123'
+        );
+        console.log('Agent 回复内容:', response.response);
+        console.log('任务ID:', response.task_id);
+        console.log('亲密度变化:', response.metadata.intimacy_delta);
+        console.log('是否包含有害内容:', response.metadata.is_toxic);
+
+        // 发送消息（只获取文本回复）
+        console.log('\n发送消息并只获取文本回复:');
+        const textReply = await sdkDev.agents.sendMessageText(
+          chatAgent.id,
+          'How can you help me?',
+          'test-session-123'
+        );
+        console.log('简单回复:', textReply);
+
+        // 发送带上下文的消息
+        console.log('\n发送带上下文的消息:');
+        const contextResponse = await sdkDev.agents.chat(chatAgent.id, {
+          message: 'What is your purpose?',
+          session_id: 'test-session-123',
+          context: {
+            user: 'SDK测试用户',
+            purpose: 'testing'
+          }
+        });
+        console.log('Agent 完整响应:', {
+          response: contextResponse.response,
+          task_id: contextResponse.task_id,
+          metadata: contextResponse.metadata
+        });
+
+        // 获取聊天历史（分页）
+        console.log('\n获取聊天历史（分页）:');
+        const history = await sdkDev.agents.getChatHistory(chatAgent.id, {
+          session_id: 'test-session-123',
+          page: 1,
+          pageSize: 5
+        });
+        
+        console.log(`分页信息:`);
+        console.log(`  当前页: ${history.pagination.page}/${history.pagination.totalPages}`);
+        console.log(`  总消息数: ${history.pagination.total}`);
+        console.log(`  当前页消息数: ${history.messages.length}`);
+        console.log(`  有上一页: ${history.pagination.hasPrev}`);
+        console.log(`  有下一页: ${history.pagination.hasNext}`);
+        
+        console.log(`\n当前页消息内容:`);
+        history.messages.forEach((msg, index) => {
+          console.log(`  ${index + 1}. [${msg.role}]: ${msg.content.substring(0, 50)}...`);
+        });
+
+        // 如果有下一页，获取下一页
+        if (history.pagination.hasNext) {
+          console.log('\n获取下一页:');
+          const nextPage = await sdkDev.agents.getChatHistory(chatAgent.id, {
+            session_id: 'test-session-123',
+            page: 2,
+            pageSize: 5
+          });
+          console.log(`第2页消息数: ${nextPage.messages.length}`);
+        }
+
+        // 演示获取原始数据
+        console.log('\n获取原始历史数据（无分页）:');
+        const rawHistory = await sdkDev.agents.getChatHistoryRaw(chatAgent.id, {
+          session_id: 'test-session-123',
+          limit: 20
+        });
+        console.log(`原始数据总消息数: ${rawHistory.messages.length}`);
+
+      } catch (error) {
+        console.log('聊天功能测试失败:', error.message);
+        console.log('这可能是因为 Agent 当前不可用或聊天功能需要特殊权限');
+      }
+    } else {
+      console.log('\n暂无运行中的 Agent，跳过聊天功能测试');
+    }
+
     // 创建新 Agent 示例（注释掉避免实际创建）
     /*
     console.log('\n创建新 Agent:');

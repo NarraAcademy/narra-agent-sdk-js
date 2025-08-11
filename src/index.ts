@@ -41,7 +41,7 @@ export class NarraSDK {
    * 获取当前 SDK 版本
    */
   getVersion(): string {
-    return '0.1.2';
+    return '0.3.0';
   }
 
   /**

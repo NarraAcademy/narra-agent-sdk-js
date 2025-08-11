@@ -5,6 +5,82 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 并遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.3.0] - 2025-08-08
+
+### 🚀 重大功能新增
+
+- **📄 SDK层面分页功能**: 为聊天历史实现了客户端分页
+  - `getChatHistory()` - 支持 `page` 和 `pageSize` 参数，在SDK层面进行分页
+  - `getChatHistoryRaw()` - 获取原始API响应，无分页处理
+  - 完整的分页信息：`pagination.page`、`pagination.totalPages`、`pagination.hasNext` 等
+
+### 新增类型
+
+- ✨ `ChatHistoryApiResponse` - 原始API响应类型
+- 🔧 增强 `ChatHistoryResponse` - 包含完整的分页信息
+- 📊 更新 `ChatHistoryParams` - 支持分页参数
+
+### 分页优势
+
+- **性能优化**: 减少单次数据传输量，提高响应速度
+- **用户体验**: 支持逐页浏览大量聊天记录
+- **内存友好**: 避免一次性加载过多历史消息
+- **灵活性**: 可根据需要自定义每页大小（默认20条）
+
+### 改进
+
+- 📚 大幅更新文档，添加详细的分页使用指南和示例
+- 🧪 更新示例代码，演示分页功能的完整用法
+- 🔧 向后兼容：现有代码无需修改，分页为可选功能
+
+## [0.2.1] - 2025-08-08
+
+### 🔧 类型定义优化
+
+- **完善聊天API响应类型**: 根据实际API响应调整了类型定义
+  - `ChatMessageResponse` - 更新为实际的响应结构，包含 `task_id`、`success`、`metadata` 等
+  - `ChatHistoryResponse` - 更新为实际的历史响应结构
+  - `ChatMessage` - 调整字段名称匹配实际API (使用 `content` 而非 `message`)
+
+### 新增方法
+
+- ✨ `sendMessageText()` - 发送消息并只返回回复文本的便利方法
+
+### 改进
+
+- 📚 更新 README 文档，添加完整的响应数据结构说明
+- 🧪 优化示例代码，展示实际的API响应和数据处理
+- 🔧 增强类型安全，所有聊天方法现在返回正确的类型
+
+## [0.2.0] - 2025-08-08
+
+### 🚀 重大功能新增
+
+- **💬 聊天功能**: 支持与 Agent 进行实时对话
+  - `chat(agentId, request)` - 与 Agent 进行对话
+  - `getChatHistory(agentId, params?)` - 获取聊天历史记录
+  - `sendMessage(agentId, message, sessionId?, context?)` - 发送简单消息的便利方法
+
+### 新增功能
+
+- 🎯 完整的聊天类型定义：
+  - `ChatMessageRequest` - 聊天消息请求
+  - `ChatMessageResponse` - 聊天消息响应  
+  - `ChatHistoryParams` - 聊天历史查询参数
+  - `ChatHistoryResponse` - 聊天历史响应
+  - `ChatMessage` - 单条聊天消息
+
+### 改进
+
+- 📚 大幅更新 README 文档，添加聊天功能使用指南
+- 🧪 更新示例代码，展示完整的聊天功能使用
+- 🔧 优化 API 错误处理和参数验证
+
+### API 端点
+
+- `POST /api/v1/agents/{agent_id}/chat` - 与 Agent 对话
+- `GET /api/v1/agents/{agent_id}/chat/history` - 获取聊天历史
+
 ## [0.1.2] - 2025-08-08
 
 ### 新增
