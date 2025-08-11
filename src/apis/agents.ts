@@ -52,23 +52,30 @@ export class AgentsAPI {
   }
 
   /**
-   * 根据 ID 获取单个 Agent
+   * 根据 ID 获取 Agent 状态
    */
-  async getAgent(id: string): Promise<Agent> {
+  async getAgentStatus(id: string): Promise<Agent> {
     if (!id) {
       throw new NarraSDKError('Agent ID is required');
     }
 
     try {
-      const response = await this.client.get<ApiResponse<Agent>>(`${this.basePath}/${id}`);
-      return response.data || response;
+      const response = await this.client.get<Agent>(`${this.basePath}/${id}/status`);
+      return response;
     } catch (error: any) {
       throw new NarraSDKError(
-        `Failed to get agent ${id}: ${error.message}`,
+        `Failed to get agent status ${id}: ${error.message}`,
         error.response?.status,
         error.response?.data
       );
     }
+  }
+
+  /**
+   * 根据 ID 获取单个 Agent（别名方法，保持向后兼容）
+   */
+  async getAgent(id: string): Promise<Agent> {
+    return this.getAgentStatus(id);
   }
 
   /**
@@ -135,7 +142,7 @@ export class AgentsAPI {
    */
   async agentExists(id: string): Promise<boolean> {
     try {
-      await this.getAgent(id);
+      await this.getAgentStatus(id);
       return true;
     } catch (error: any) {
       if (error.code === 404) {

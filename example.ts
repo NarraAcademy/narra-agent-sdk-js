@@ -46,20 +46,23 @@ async function main() {
       const firstAgent = agentsResponse.agents[0];
       
       try {
-        console.log(`\n获取 Agent 详情: ${firstAgent.id}`);
-        const agentDetail = await sdkDev.agents.getAgent(firstAgent.id);
-        console.log('Agent 详情:', {
-          name: agentDetail.name,
-          display_name: agentDetail.display_name,
-          status: agentDetail.status,
-          agent_type: agentDetail.agent_type,
-          model: agentDetail.model,
-          version: agentDetail.version,
-          created_at: agentDetail.created_at,
-          config: agentDetail.config
+        console.log(`\n获取 Agent 状态: ${firstAgent.id}`);
+        const agentStatus = await sdkDev.agents.getAgentStatus(firstAgent.id);
+        console.log('Agent 状态详情:', {
+          name: agentStatus.name,
+          display_name: agentStatus.display_name,
+          status: agentStatus.status,
+          agent_type: agentStatus.agent_type,
+          model: agentStatus.model,
+          version: agentStatus.version,
+          created_at: agentStatus.created_at,
+          last_activity_at: agentStatus.last_activity_at,
+          total_tasks: agentStatus.total_tasks,
+          completed_tasks: agentStatus.completed_tasks,
+          failed_tasks: agentStatus.failed_tasks
         });
       } catch (error) {
-        console.log('获取 Agent 详情失败:', error.message);
+        console.log('获取 Agent 状态失败:', error.message);
       }
     }
     

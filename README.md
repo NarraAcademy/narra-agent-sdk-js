@@ -98,6 +98,8 @@ main().catch(console.error);
   - 支持按 `status` 筛选
   - 支持按 `name` 搜索
 
+- **`getAgentStatus(id)`** - 获取 Agent 状态详情
+- **`getAgent(id)`** - 获取 Agent 状态（`getAgentStatus` 的别名）
 - **`ping()`** - 测试 SDK 与 API 的连接
 
 #### 响应数据结构
@@ -129,7 +131,6 @@ interface Agent {
 
 ### 🚧 待验证的功能
 
-- **`getAgent(id)`** - 获取单个 Agent 详情（需确认 API 端点）
 - **`createAgent(data)`** - 创建 Agent（待 API 文档确认）
 - **`updateAgent(id, data)`** - 更新 Agent（待 API 文档确认）
 - **`deleteAgent(id)`** - 删除 Agent（待 API 文档确认）
