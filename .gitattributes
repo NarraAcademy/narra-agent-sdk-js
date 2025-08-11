@@ -1,0 +1,18 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Force specific files to be treated as text
+*.ts text
+*.js text
+*.json text
+*.md text
+*.yml text
+*.yaml text
+
+# Ensure these files are always have LF line endings on checkout
+*.sh text eol=lf
+
+# Exclude files from GitHub language statistics
+package-lock.json linguist-generated=true
+dist/** linguist-generated=true
+*.d.ts linguist-generated=true

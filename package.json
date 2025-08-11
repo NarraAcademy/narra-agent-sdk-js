@@ -1,0 +1,60 @@
+{
+  "name": "@narra/agent-sdk",
+  "version": "0.1.0",
+  "description": "Narra Agent SDK for Node.js / TypeScript",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "example": "tsx example.ts",
+    "example:build": "npm run build && node dist/example.js",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:NarraAcademy/narra-agent-sdk-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NarraAcademy/narra-agent-sdk-js/issues"
+  },
+  "homepage": "https://github.com/NarraAcademy/narra-agent-sdk-js#readme",
+  "keywords": [
+    "narra",
+    "agent",
+    "sdk",
+    "typescript",
+    "nodejs",
+    "ai",
+    "engine",
+    "api-client"
+  ],
+  "author": "Narra Academy",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
