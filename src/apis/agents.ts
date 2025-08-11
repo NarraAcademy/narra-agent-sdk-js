@@ -5,11 +5,9 @@
 import { HttpClient } from '../client';
 import {
   Agent,
-  CreateAgentRequest,
-  UpdateAgentRequest,
+  AgentType,
   ListAgentsParams,
   AgentsListResponse,
-  ApiResponse,
   NarraSDKError,
 } from '../types';
 
@@ -78,64 +76,33 @@ export class AgentsAPI {
     return this.getAgentStatus(id);
   }
 
-  /**
-   * 创建新的 Agent
-   */
-  async createAgent(data: CreateAgentRequest): Promise<Agent> {
-    if (!data.name) {
-      throw new NarraSDKError('Agent name is required');
-    }
-
-    try {
-      const response = await this.client.post<ApiResponse<Agent>>(this.basePath, data);
-      return response.data || response;
-    } catch (error: any) {
-      throw new NarraSDKError(
-        `Failed to create agent: ${error.message}`,
-        error.response?.status,
-        error.response?.data
-      );
-    }
-  }
+  // ========================================
+  // 以下方法待后续开发，暂时注释
+  // ========================================
 
   /**
-   * 更新 Agent
+   * 创建新的 Agent（待实现）
+   * TODO: 需要确认 API 端点和参数格式
    */
-  async updateAgent(id: string, data: UpdateAgentRequest): Promise<Agent> {
-    if (!id) {
-      throw new NarraSDKError('Agent ID is required');
-    }
-
-    try {
-      const response = await this.client.put<ApiResponse<Agent>>(`${this.basePath}/${id}`, data);
-      return response.data || response;
-    } catch (error: any) {
-      throw new NarraSDKError(
-        `Failed to update agent ${id}: ${error.message}`,
-        error.response?.status,
-        error.response?.data
-      );
-    }
-  }
+  // async createAgent(data: CreateAgentRequest): Promise<Agent> {
+  //   throw new NarraSDKError('createAgent method is not implemented yet');
+  // }
 
   /**
-   * 删除 Agent
+   * 更新 Agent（待实现）
+   * TODO: 需要确认 API 端点和参数格式
    */
-  async deleteAgent(id: string): Promise<void> {
-    if (!id) {
-      throw new NarraSDKError('Agent ID is required');
-    }
+  // async updateAgent(id: string, data: UpdateAgentRequest): Promise<Agent> {
+  //   throw new NarraSDKError('updateAgent method is not implemented yet');
+  // }
 
-    try {
-      await this.client.delete(`${this.basePath}/${id}`);
-    } catch (error: any) {
-      throw new NarraSDKError(
-        `Failed to delete agent ${id}: ${error.message}`,
-        error.response?.status,
-        error.response?.data
-      );
-    }
-  }
+  /**
+   * 删除 Agent（待实现）
+   * TODO: 需要确认 API 端点
+   */
+  // async deleteAgent(id: string): Promise<void> {
+  //   throw new NarraSDKError('deleteAgent method is not implemented yet');
+  // }
 
   /**
    * 检查 Agent 是否存在
@@ -153,37 +120,50 @@ export class AgentsAPI {
   }
 
   /**
-   * 批量删除 Agents
+   * 根据类型获取 Agent 列表的便利方法
    */
-  async deleteAgents(ids: string[]): Promise<void> {
-    if (!ids.length) {
-      throw new NarraSDKError('At least one agent ID is required');
-    }
-
-    try {
-      await this.client.delete(this.basePath, {
-        data: { ids }
-      });
-    } catch (error: any) {
-      throw new NarraSDKError(
-        `Failed to delete agents: ${error.message}`,
-        error.response?.status,
-        error.response?.data
-      );
-    }
+  async getAgentsByType(agentType: AgentType): Promise<Agent[]> {
+    const response = await this.listAgents({ agent_type: agentType });
+    return response.agents;
   }
 
   /**
-   * 激活 Agent
+   * 获取运行中的 Agent 列表
    */
-  async activateAgent(id: string): Promise<Agent> {
-    return this.updateAgent(id, { status: 'active' });
+  async getRunningAgents(): Promise<Agent[]> {
+    const response = await this.listAgents({ status: 'running' });
+    return response.agents;
   }
 
   /**
-   * 停用 Agent
+   * 获取可用的 Agent 类型列表
    */
-  async deactivateAgent(id: string): Promise<Agent> {
-    return this.updateAgent(id, { status: 'inactive' });
+  async getAvailableAgentTypes(): Promise<AgentType[]> {
+    const response = await this.listAgents();
+    return response.available_types;
   }
+
+  /**
+   * 批量删除 Agents（待实现）
+   * TODO: 需要确认 API 端点
+   */
+  // async deleteAgents(ids: string[]): Promise<void> {
+  //   throw new NarraSDKError('deleteAgents method is not implemented yet');
+  // }
+
+  /**
+   * 激活 Agent（待实现）
+   * TODO: 需要确认 API 端点
+   */
+  // async activateAgent(id: string): Promise<Agent> {
+  //   throw new NarraSDKError('activateAgent method is not implemented yet');
+  // }
+
+  /**
+   * 停用 Agent（待实现）
+   * TODO: 需要确认 API 端点
+   */
+  // async deactivateAgent(id: string): Promise<Agent> {
+  //   throw new NarraSDKError('deactivateAgent method is not implemented yet');
+  // }
 }

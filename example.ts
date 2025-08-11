@@ -66,19 +66,38 @@ async function main() {
       }
     }
     
-    // 测试按类型筛选
+    // 测试按类型筛选（原始方法）
     console.log('\n测试筛选功能 - 筛选 zai_professional 类型:');
     const filteredAgents = await sdkDev.agents.listAgents({
       agent_type: 'zai_professional'
     });
     console.log(`筛选结果: 找到 ${filteredAgents.agents.length} 个 zai_professional Agent`);
     
-    // 测试按状态筛选
-    console.log('\n测试筛选功能 - 筛选 running 状态:');
-    const runningAgents = await sdkDev.agents.listAgents({
-      status: 'running'
-    });
-    console.log(`筛选结果: 找到 ${runningAgents.agents.length} 个运行中的 Agent`);
+    // 测试便利方法 - 按类型获取
+    console.log('\n使用便利方法 - 获取 zai_emotional 类型:');
+    const emotionalAgents = await sdkDev.agents.getAgentsByType('zai_emotional');
+    console.log(`找到 ${emotionalAgents.length} 个 zai_emotional Agent`);
+    if (emotionalAgents.length > 0) {
+      console.log(`第一个: ${emotionalAgents[0].display_name} (${emotionalAgents[0].status})`);
+    }
+    
+    // 获取所有运行中的 Agent
+    console.log('\n获取所有运行中的 Agent:');
+    const runningAgents = await sdkDev.agents.getRunningAgents();
+    console.log(`运行中的 Agent 数量: ${runningAgents.length}`);
+    
+    // 获取可用的 Agent 类型
+    console.log('\n获取可用的 Agent 类型:');
+    const availableTypes = await sdkDev.agents.getAvailableAgentTypes();
+    console.log(`可用类型: ${availableTypes.join(', ')}`);
+    
+    // 测试 Agent 存在性检查
+    if (agentsResponse.agents.length > 0) {
+      const testId = agentsResponse.agents[0].id;
+      console.log(`\n检查 Agent 是否存在: ${testId}`);
+      const exists = await sdkDev.agents.agentExists(testId);
+      console.log(`Agent 存在: ${exists}`);
+    }
 
     // 创建新 Agent 示例（注释掉避免实际创建）
     /*

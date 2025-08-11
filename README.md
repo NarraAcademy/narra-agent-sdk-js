@@ -73,15 +73,21 @@ async function main() {
   const agentsResponse = await sdk.agents.listAgents();
   console.log(`找到 ${agentsResponse.total_instances} 个 Agents`);
   
-  // 按类型筛选
-  const professionalAgents = await sdk.agents.listAgents({
-    agent_type: 'zai_professional'
-  });
+  // 获取可用的 Agent 类型
+  const availableTypes = await sdk.agents.getAvailableAgentTypes();
+  console.log('可用类型:', availableTypes);
   
-  // 按状态筛选
-  const runningAgents = await sdk.agents.listAgents({
-    status: 'running'
-  });
+  // 使用便利方法按类型获取
+  const professionalAgents = await sdk.agents.getAgentsByType('zai_professional');
+  
+  // 获取所有运行中的 Agent
+  const runningAgents = await sdk.agents.getRunningAgents();
+  
+  // 获取特定 Agent 的状态
+  if (runningAgents.length > 0) {
+    const agentStatus = await sdk.agents.getAgentStatus(runningAgents[0].id);
+    console.log('Agent 状态:', agentStatus);
+  }
 }
 
 main().catch(console.error);
@@ -94,12 +100,21 @@ main().catch(console.error);
 #### Agents API
 
 - **`listAgents(params?)`** - 获取 Agent 列表
-  - 支持按 `agent_type` 筛选
+  - 支持按 `agent_type` 筛选（支持具体类型或 null）
   - 支持按 `status` 筛选
   - 支持按 `name` 搜索
 
 - **`getAgentStatus(id)`** - 获取 Agent 状态详情
 - **`getAgent(id)`** - 获取 Agent 状态（`getAgentStatus` 的别名）
+
+#### 便利方法
+
+- **`getAgentsByType(agentType)`** - 根据类型获取 Agent 列表
+- **`getRunningAgents()`** - 获取所有运行中的 Agent
+- **`getAvailableAgentTypes()`** - 获取可用的 Agent 类型列表
+
+#### 工具方法
+
 - **`ping()`** - 测试 SDK 与 API 的连接
 
 #### 响应数据结构
@@ -129,11 +144,19 @@ interface Agent {
 }
 ```
 
-### 🚧 待验证的功能
+### 🔄 其他功能
 
-- **`createAgent(data)`** - 创建 Agent（待 API 文档确认）
-- **`updateAgent(id, data)`** - 更新 Agent（待 API 文档确认）
-- **`deleteAgent(id)`** - 删除 Agent（待 API 文档确认）
+- **`agentExists(id)`** - 检查 Agent 是否存在
+
+### 📊 支持的 Agent 类型
+
+SDK 支持以下 Agent 类型（具有完整的 TypeScript 类型安全）：
+
+- `default` - 默认类型
+- `bnb_emotional` - BNB 情感型
+- `bnb_professional` - BNB 专业型  
+- `zai_professional` - ZAI 专业型
+- `zai_emotional` - ZAI 情感型
 
 ## 环境配置
 
@@ -233,6 +256,10 @@ narra-agent-sdk-js/
 ### 短期目标
 
 - [ ] 根据完整 API 文档补充更多接口
+  - [ ] 实现 `createAgent(data)` - 创建 Agent
+  - [ ] 实现 `updateAgent(id, data)` - 更新 Agent  
+  - [ ] 实现 `deleteAgent(id)` - 删除 Agent
+  - [ ] 实现 `activateAgent(id)` / `deactivateAgent(id)` - 激活/停用 Agent
 - [ ] 添加完整的单元测试覆盖
 - [ ] 完善错误处理和日志系统
 - [ ] 添加接口文档和使用指南
@@ -240,7 +267,7 @@ narra-agent-sdk-js/
 ### 长期目标
 
 - [ ] 自动从 OpenAPI 规范生成接口类型
-- [ ] 支持更多 API 模块（Tasks、Models 等）
+- [ ] 支持更多 API 模块（Tasks、Models、Jobs 等）
 - [ ] 发布至 npm 并提供在线文档
 - [ ] 支持浏览器环境使用
 

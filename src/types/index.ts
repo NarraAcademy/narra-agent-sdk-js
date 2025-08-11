@@ -31,6 +31,16 @@ export interface PaginationParams {
 }
 
 /**
+ * 可用的 Agent 类型
+ */
+export type AgentType = 
+  | 'default'
+  | 'bnb_emotional'
+  | 'bnb_professional'
+  | 'zai_professional'
+  | 'zai_emotional';
+
+/**
  * Agent 列表响应结构
  */
 export interface AgentsListResponse {
@@ -39,7 +49,7 @@ export interface AgentsListResponse {
   /** 总实例数 */
   total_instances: number;
   /** 可用的 Agent 类型 */
-  available_types: string[];
+  available_types: AgentType[];
   /** 提示信息 */
   hint: string | null;
 }
@@ -106,39 +116,34 @@ export interface Agent {
   tools: any[];
 }
 
-/**
- * 创建 Agent 的请求参数
- */
-export interface CreateAgentRequest {
-  /** Agent 名称 */
-  name: string;
-  /** Agent 描述 */
-  description?: string;
-  /** Agent 类型 */
-  type?: string;
-  /** Agent 配置 */
-  config?: Record<string, any>;
-  /** Agent 元数据 */
-  metadata?: Record<string, any>;
-}
+// ========================================
+// 以下类型定义待后续开发使用
+// ========================================
 
 /**
- * 更新 Agent 的请求参数
+ * 创建 Agent 的请求参数（待实现）
+ * TODO: 根据实际 API 文档确认字段
  */
-export interface UpdateAgentRequest {
-  /** Agent 名称 */
-  name?: string;
-  /** Agent 描述 */
-  description?: string;
-  /** Agent 类型 */
-  type?: string;
-  /** Agent 状态 */
-  status?: 'active' | 'inactive' | 'pending' | 'error';
-  /** Agent 配置 */
-  config?: Record<string, any>;
-  /** Agent 元数据 */
-  metadata?: Record<string, any>;
-}
+// export interface CreateAgentRequest {
+//   name: string;
+//   description?: string;
+//   agent_type?: string;
+//   config?: Record<string, any>;
+//   metadata?: Record<string, any>;
+// }
+
+/**
+ * 更新 Agent 的请求参数（待实现）
+ * TODO: 根据实际 API 文档确认字段
+ */
+// export interface UpdateAgentRequest {
+//   name?: string;
+//   description?: string;
+//   agent_type?: string;
+//   status?: 'running' | 'stopped' | 'pending' | 'error';
+//   config?: Record<string, any>;
+//   metadata?: Record<string, any>;
+// }
 
 /**
  * 查询 Agent 列表的参数
@@ -146,8 +151,12 @@ export interface UpdateAgentRequest {
 export interface ListAgentsParams {
   /** 按名称搜索 */
   name?: string;
-  /** 按 Agent 类型筛选 */
-  agent_type?: string;
+  /** 
+   * 按 Agent 类型筛选
+   * 支持的类型：default, bnb_emotional, bnb_professional, zai_professional, zai_emotional
+   * 可以传入具体类型或 null
+   */
+  agent_type?: AgentType | string | null;
   /** 按状态筛选 */
   status?: 'running' | 'stopped' | 'pending' | 'error';
   /** 页码（如果API支持分页） */
