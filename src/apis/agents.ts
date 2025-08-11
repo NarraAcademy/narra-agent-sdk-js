@@ -199,10 +199,9 @@ export class AgentsAPI {
     }
 
     try {
-      // 获取原始数据
+      // 获取原始数据（API现在返回全部历史记录）
       const apiResponse = await this.getChatHistoryRaw(agentId, {
-        session_id: params.session_id,
-        limit: params.limit
+        session_id: params.session_id
       });
 
       // SDK 层面分页参数
@@ -245,6 +244,7 @@ export class AgentsAPI {
 
   /**
    * 获取 Agent 聊天历史（原始 API 响应，无分页处理）
+   * API 现在返回指定会话的全部历史记录
    * @param agentId Agent ID
    * @param params 查询参数
    * @returns 原始聊天历史数据
@@ -256,16 +256,16 @@ export class AgentsAPI {
     if (!agentId) {
       throw new NarraSDKError('Agent ID is required');
     }
+    if (!params.session_id) {
+      throw new NarraSDKError('Session ID is required');
+    }
 
     try {
       const queryParams = new URLSearchParams();
       
       // 设置默认值
-      const sessionId = params.session_id || 'dashboard_session';
-      const limit = params.limit || 50;
-      
+      const sessionId = params.session_id;
       queryParams.append('session_id', sessionId);
-      queryParams.append('limit', limit.toString());
 
       const url = `${this.basePath}/${agentId}/chat/history?${queryParams.toString()}`;
       const response = await this.client.get<ChatHistoryApiResponse>(url);
@@ -278,49 +278,6 @@ export class AgentsAPI {
         error.response?.data
       );
     }
-  }
-
-  /**
-   * 便利方法：发送简单消息到 Agent
-   * @param agentId Agent ID
-   * @param message 消息内容
-   * @param sessionId 会话ID，默认为 'dashboard_session'
-   * @param context 可选的上下文信息
-   * @returns Agent 的完整响应
-   */
-  async sendMessage(
-    agentId: string, 
-    message: string, 
-    sessionId: string = 'dashboard_session',
-    context?: Record<string, any>
-  ): Promise<ChatMessageResponse> {
-    return this.chat(agentId, {
-      message,
-      session_id: sessionId,
-      context
-    });
-  }
-
-  /**
-   * 便利方法：发送消息并只返回回复内容
-   * @param agentId Agent ID
-   * @param message 消息内容
-   * @param sessionId 会话ID，默认为 'dashboard_session'
-   * @param context 可选的上下文信息
-   * @returns Agent 的回复内容（纯文本）
-   */
-  async sendMessageText(
-    agentId: string, 
-    message: string, 
-    sessionId: string = 'dashboard_session',
-    context?: Record<string, any>
-  ): Promise<string> {
-    const response = await this.chat(agentId, {
-      message,
-      session_id: sessionId,
-      context
-    });
-    return response.response;
   }
 
   /**

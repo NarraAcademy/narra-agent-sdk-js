@@ -105,31 +105,10 @@ async function main() {
       console.log(`\n开始与 Agent 聊天: ${chatAgent.display_name} (${chatAgent.id})`);
       
       try {
-        // 发送消息（获取完整响应）
-        console.log('发送消息: "Hello, how are you?"');
-        const response = await sdkDev.agents.sendMessage(
-          chatAgent.id,
-          'Hello, how are you?',
-          'test-session-123'
-        );
-        console.log('Agent 回复内容:', response.response);
-        console.log('任务ID:', response.task_id);
-        console.log('亲密度变化:', response.metadata.intimacy_delta);
-        console.log('是否包含有害内容:', response.metadata.is_toxic);
-
-        // 发送消息（只获取文本回复）
-        console.log('\n发送消息并只获取文本回复:');
-        const textReply = await sdkDev.agents.sendMessageText(
-          chatAgent.id,
-          'How can you help me?',
-          'test-session-123'
-        );
-        console.log('简单回复:', textReply);
-
         // 发送带上下文的消息
         console.log('\n发送带上下文的消息:');
         const contextResponse = await sdkDev.agents.chat(chatAgent.id, {
-          message: 'What is your purpose?',
+          message: 'What is your name?',
           session_id: 'test-session-123',
           context: {
             user: 'SDK测试用户',
@@ -176,8 +155,7 @@ async function main() {
         // 演示获取原始数据
         console.log('\n获取原始历史数据（无分页）:');
         const rawHistory = await sdkDev.agents.getChatHistoryRaw(chatAgent.id, {
-          session_id: 'test-session-123',
-          limit: 20
+          session_id: 'test-session-123'
         });
         console.log(`原始数据总消息数: ${rawHistory.messages.length}`);
 

@@ -285,20 +285,25 @@ async function loadNextPage(currentHistory) {
   return null;
 }
 
-// 获取原始数据（如果需要一次性获取所有消息）
+// 获取原始数据（获取指定会话的全部消息）
 const rawHistory = await sdk.agents.getChatHistoryRaw('agent-id', {
-  session_id: 'my-session-123',
-  limit: 100  // API层面限制
+  session_id: 'my-session-123'
 });
 console.log('总消息数:', rawHistory.messages.length);
 ```
 
 #### 分页优势
 
-- **性能优化**: 减少单次数据传输量
-- **用户体验**: 支持逐页浏览聊天记录
-- **内存友好**: 避免一次性加载大量历史消息
-- **灵活性**: 可根据需要调整每页大小
+- **性能优化**: API现在返回全部历史记录，客户端分页避免一次性渲染大量消息
+- **用户体验**: 支持逐页浏览聊天记录，提升大数据量时的浏览体验
+- **内存友好**: 只处理当前页数据，减少DOM渲染压力
+- **灵活性**: 可根据UI需要调整每页大小（默认20条）
+
+#### API更新说明
+
+- **API简化**: 新版API移除了 `limit` 参数，直接返回指定会话的全部历史
+- **完整数据**: 一次请求获得完整聊天历史，SDK层面提供分页展示
+- **更好性能**: 减少多次API调用，在客户端进行智能分页
 
 ## 环境配置
 

@@ -210,8 +210,6 @@ export interface ChatMessageResponse {
 export interface ChatHistoryParams {
   /** 会话ID，默认为 dashboard_session */
   session_id?: string;
-  /** 限制返回的消息数量，默认为 50 */
-  limit?: number;
   /** 页码，从 1 开始（SDK 层面分页） */
   page?: number;
   /** 每页大小（SDK 层面分页），默认为 20 */
