@@ -9,8 +9,8 @@ export type Environment = 'dev' | 'staging' | 'prod';
  */
 export const ENV_BASE_URLS: Record<Environment, string> = {
   dev: 'https://narra-agent-engine-dev-249369560324.asia-southeast1.run.app',
-  staging: 'https://narra-agent-engine-staging.xxx.com',
-  prod: 'https://narra-agent-engine.xxx.com',
+  staging: 'https://narra-agent-engine-dev-249369560324.asia-southeast1.run.app',
+  prod: 'https://narra-agent-engine-pord-249369560324.asia-southeast1.run.app',
 };
 
 /**
