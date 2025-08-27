@@ -22,6 +22,7 @@ export class HttpClient {
       baseURL: resolveBaseURL(config),
       timeout: config.timeout || DEFAULT_CONFIG.timeout,
       retries: config.retries || DEFAULT_CONFIG.retries,
+      apiKey: config.apiKey || DEFAULT_CONFIG.apiKey,
     };
 
     this.axiosInstance = axios.create({
@@ -43,6 +44,9 @@ export class HttpClient {
     // 请求拦截器
     this.axiosInstance.interceptors.request.use(
       (config) => {
+        if (this.config.apiKey) {
+          config.headers.Authorization = `Bearer ${this.config.apiKey}`;
+        }
         console.log(`[Narra SDK] ${config.method?.toUpperCase()} ${config.url}`);
         return config;
       },

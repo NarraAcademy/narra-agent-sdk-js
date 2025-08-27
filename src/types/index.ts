@@ -31,16 +31,6 @@ export interface PaginationParams {
 }
 
 /**
- * 可用的 Agent 类型
- */
-export type AgentType = 
-  | 'default'
-  | 'bnb_emotional'
-  | 'bnb_professional'
-  | 'zai_professional'
-  | 'zai_emotional';
-
-/**
  * Agent 列表响应结构
  */
 export interface AgentsListResponse {
@@ -49,7 +39,7 @@ export interface AgentsListResponse {
   /** 总实例数 */
   total_instances: number;
   /** 可用的 Agent 类型 */
-  available_types: AgentType[];
+  available_types: string[];
   /** 提示信息 */
   hint: string | null;
 }
@@ -156,7 +146,7 @@ export interface ListAgentsParams {
    * 支持的类型：default, bnb_emotional, bnb_professional, zai_professional, zai_emotional
    * 可以传入具体类型或 null
    */
-  agent_type?: AgentType | string | null;
+  agent_type?: string | null;
   /** 按状态筛选 */
   status?: 'running' | 'stopped' | 'pending' | 'error';
   /** 页码（如果API支持分页） */

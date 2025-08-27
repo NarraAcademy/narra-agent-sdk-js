@@ -1,6 +1,7 @@
 /**
  * SDK 配置文件 - 环境映射和默认配置
  */
+import 'dotenv/config';
 
 export type Environment = 'dev' | 'staging' | 'prod';
 
@@ -10,7 +11,7 @@ export type Environment = 'dev' | 'staging' | 'prod';
 export const ENV_BASE_URLS: Record<Environment, string> = {
   dev: 'https://narra-agent-engine-dev-249369560324.asia-southeast1.run.app',
   staging: 'https://narra-agent-engine-dev-249369560324.asia-southeast1.run.app',
-  prod: 'https://narra-agent-engine-pord-249369560324.asia-southeast1.run.app',
+  prod: 'https://narra-agent-engine-prod-249369560324.asia-southeast1.run.app',
 };
 
 /**
@@ -20,6 +21,7 @@ export const DEFAULT_CONFIG = {
   environment: 'prod' as Environment,
   timeout: 30000, // 30 seconds
   retries: 3,
+  apiKey: process.env.NARRA_AGENT_API_KEY || undefined,
 } as const;
 
 /**
@@ -34,6 +36,8 @@ export interface SDKConfig {
   timeout?: number;
   /** 重试次数，默认 3 */
   retries?: number;
+  /** API 密钥，优先从环境变量 NARRA_AGENT_API_KEY 读取 */
+  apiKey?: string;
 }
 
 /**

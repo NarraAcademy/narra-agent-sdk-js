@@ -5,7 +5,6 @@
 import { HttpClient } from '../client';
 import {
   Agent,
-  AgentType,
   ListAgentsParams,
   AgentsListResponse,
   ChatMessageRequest,
@@ -28,10 +27,10 @@ export class AgentsAPI {
    * 获取可用的 Agent 类型列表
    * @returns 可用的 Agent 类型数组
    */
-  async listAgentTypes(): Promise<AgentType[]> {
+  async listAgentTypes(): Promise<string[]> {
     try {
       const url = `${this.basePath}/types`;
-      const response = await this.client.get<AgentType[]>(url);
+      const response = await this.client.get<string[]>(url);
       return response;
     } catch (error: any) {
       throw new NarraSDKError(
@@ -145,7 +144,7 @@ export class AgentsAPI {
   /**
    * 根据类型获取 Agent 列表的便利方法
    */
-  async getAgentsByType(agentType: AgentType): Promise<Agent[]> {
+  async getAgentsByType(agentType: string): Promise<Agent[]> {
     const response = await this.listAgents({ agent_type: agentType });
     return response.agents;
   }
@@ -161,7 +160,7 @@ export class AgentsAPI {
   /**
    * 获取可用的 Agent 类型列表
    */
-  async getAvailableAgentTypes(): Promise<AgentType[]> {
+  async getAvailableAgentTypes(): Promise<string[]> {
     const response = await this.listAgents();
     return response.available_types;
   }

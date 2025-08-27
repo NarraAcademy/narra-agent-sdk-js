@@ -5,6 +5,12 @@
 import { NarraSDK } from './src';
 
 async function main() {
+  // 优先级: 手动传入 > 环境变量 > .env 文件
+  const sdk = new NarraSDK({
+    env: 'dev',
+    // apiKey: 'YOUR_API_KEY' // 可手动传入，优先级最高
+  });
+
   // 1. 开发环境
   const sdkDev = new NarraSDK({
     env: 'dev'

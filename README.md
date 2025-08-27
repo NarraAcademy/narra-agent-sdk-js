@@ -45,15 +45,19 @@ npm install @narra/agent-sdk
 ```typescript
 import { NarraSDK } from "@narra/agent-sdk";
 
-// 1. 开发环境
-const sdkDev = new NarraSDK({
-  env: "dev"
+// 1. 自动从环境变量 NARRA_AGENT_API_KEY 读取密钥
+const sdk = new NarraSDK({ env: "dev" });
+
+// 2. 手动传入密钥（优先级更高）
+const sdkWithKey = new NarraSDK({
+  env: "dev",
+  apiKey: "YOUR_API_KEY"
 });
 
-// 2. 生产环境（默认）
+// 3. 生产环境（默认）
 const sdkProd = new NarraSDK();
 
-// 3. 自定义环境
+// 4. 自定义环境
 const sdkCustom = new NarraSDK({
   baseURL: "https://custom-env.yourcompany.com"
 });
@@ -119,6 +123,38 @@ console.log('当前使用的类型:', availableTypes);
 }
 
 main().catch(console.error);
+```
+
+## API 密钥配置
+
+SDK 支持通过多种方式配置 API 密钥，按以下优先级顺序生效：
+
+1.  **手动传入 `apiKey`**：在初始化 `NarraSDK` 时直接传入 `apiKey` 参数，优先级最高。
+2.  **环境变量 `NARRA_AGENT_API_KEY`**：自动从环境变量 `NARRA_AGENT_API_KEY` 读取密钥。
+3.  **`.env` 文件**：在项目根目录下创建 `.env` 文件并设置 `NARRA_AGENT_API_KEY`。
+
+### 示例
+
+#### 1. 手动传入
+
+```typescript
+const sdk = new NarraSDK({
+  apiKey: "YOUR_API_KEY"
+});
+```
+
+#### 2. 环境变量
+
+```bash
+export NARRA_AGENT_API_KEY="YOUR_API_KEY"
+```
+
+#### 3. .env 文件
+
+在项目根目录创建 `.env` 文件：
+
+```
+NARRA_AGENT_API_KEY="YOUR_API_KEY"
 ```
 
 ## API 功能
