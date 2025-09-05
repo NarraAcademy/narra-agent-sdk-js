@@ -19,7 +19,7 @@ export const ENV_BASE_URLS: Record<Environment, string> = {
  */
 export const DEFAULT_CONFIG = {
   environment: 'prod' as Environment,
-  timeout: 30000, // 30 seconds
+  timeout: 50000, // 50 seconds
   retries: 3,
   apiKey: process.env.NARRA_AGENT_API_KEY || '',
 } as const;
